@@ -2,13 +2,14 @@
 title: "mtcars data analysis -  Regression Models Course Project"
 author: "MSI"
 date: "October 20, 2015"
-output: pdf_document
+output: html_document
+fig_caption: yes
 ---
 
 
 ## Executive summary
 
-Looking at the provided mtcars dataset, I can not draw a strong conlusion wheather automatic transmission car have a better MPG outcome or the opposite because the samples are not matched for the typical car's classification ( weight and/or horsepower). The manual transmmission cars in the sample are smaller cars, which give higher MPG than larger cars in general.
+Looking at the provided mtcars dataset, I can not draw a strong conlusion whether automatic transmission cars give better MPG outcome or the opposite because the samples are not matched for the typical car classifications ( weight and/or horsepower). The manual transmmission cars in the sample are smaller cars, which give higher MPG than larger cars in general.
 Looking at a subset of midsize cars with similar weight, automatic cars tend to have a better MPG outcome, but the subset is too small and larger sample is needed to draw a final conclusion. 
 
 ## Exploratory analysis
@@ -20,13 +21,12 @@ Looking at a subset of midsize cars with similar weight, automatic cars tend to 
   am_wt <- tapply(mtcars$wt,factor(mtcars$am),mean)
 ```
 
-The dataset contains `r am_count[1]` automatic and `r am_count[2]` manual transmission cars. The average mpg is  `r format(am_mpg[1], digits=3)` for automatic transmission and  `r format(am_mpg[2], digits=3)` for manual transmission cars.
+The dataset contains `r am_count[1]` automatic and `r am_count[2]` manual cars. The average Miles Per Gallon (MPG) is  respectively `r format(am_mpg[1], digits=3)` and  `r format(am_mpg[2], digits=3)` for automatic  and manual transmission cars.
 
-The assumption that smaller cars (lower weight) give a better MPG outcome than larger cars (higher weight) can be observed in the mtcars dataset for automatic or manual transmission cars (figure 1). 
+The assumption that smaller cars (lower weight) give a better MPG outcome than larger cars (higher weight) can be observed in the dataset for both automatic and  manual transmission cars (see figure 1). 
 
-Looking at the small subset of automatic and  manual in the mid-size range (weight around  3), there is a trend that automatic cars have better MPG outcome.
+Looking at the small subset of automatic and  manual in the mid-size range (weight close to  3), there is a trend that automatic cars have better MPG outcome.
 
-Two variables (mpg,qsec) are outcome variables while the remaining are feature variables.
 
 ```r
 The Mileage Per Gallon outcome (MPG) and transmission type variable (am) are of interest to answer the project questions:
@@ -34,10 +34,9 @@ The Mileage Per Gallon outcome (MPG) and transmission type variable (am) are of 
 - Is an automatic or manual transmission better for MPG?
 - How much is the MPG difference between automatic and manual transmissions?
 
-## Exploratory analysis
-```{r plot} 
+## Detailed analysis
+```{r plot1} 
   library(ggplot2)
-  data(mtcars)
   mtcars$am <- factor(mtcars$am,levels=c(0,1),labels=c("Automatic","Manual")) 
   fit <- lm(mpg~wt*am,data=mtcars)
   g <- ggplot(mtcars,aes(y=mpg,x=wt,colour=am))+geom_point(size=5)
@@ -45,3 +44,12 @@ The Mileage Per Gallon outcome (MPG) and transmission type variable (am) are of 
   g1 <- g+geom_abline(intercept=coef(fit)[1],slope=coef(fit)[2],size=2)
   g1+geom_abline(intercept=coef(fit)[1]+coef(fit)[3],slope=coef(fit)[2]+coef(fit)[4],size=1)
 ```
+
+\newpage
+
+## Appendix plots
+```{r plot2} 
+  par(mfrow=c(2,2))
+  plot(lm(mpg~wt*am,data=mtcars))
+```
+

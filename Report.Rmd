@@ -1,15 +1,15 @@
 ---
 title: "mtcars data analysis -  Regression Models Course Project"
-author: "MSI"
-date: "October 20, 2015"
-output: html_document
+author: "MSibomana"
+date: "October 23, 2015"
+output: pdf_document
 fig_caption: yes
 ---
 
 
 ## Executive summary
 
-Looking at the provided mtcars dataset, I can not draw a strong conlusion whether automatic transmission cars give better MPG outcome or the opposite because the samples are not matched for the typical car classifications ( weight and/or horsepower). The manual transmmission cars in the sample are smaller cars, which give higher MPG than larger cars in general.
+Looking at the provided mtcars dataset, I can not draw a strong conlusion whether automatic transmission cars give better MPG outcome or the opposite because the samples are not matched for the typical car classifications ( weight and/or horsepower). The manual cars in the sample are smaller cars, which give higher MPG than larger cars in general.
 Looking at a subset of midsize cars with similar weight, automatic cars tend to have a better MPG outcome, but the subset is too small and larger sample is needed to draw a final conclusion. 
 
 ## Exploratory analysis
@@ -23,32 +23,43 @@ Looking at a subset of midsize cars with similar weight, automatic cars tend to 
 
 The dataset contains `r am_count[1]` automatic and `r am_count[2]` manual cars. The average Miles Per Gallon (MPG) is  respectively `r format(am_mpg[1], digits=3)` and  `r format(am_mpg[2], digits=3)` for automatic  and manual transmission cars.
 
-The assumption that smaller cars (lower weight) give a better MPG outcome than larger cars (higher weight) can be observed in the dataset for both automatic and  manual transmission cars (see figure 1). 
-
-Looking at the small subset of automatic and  manual in the mid-size range (weight close to  3), there is a trend that automatic cars have better MPG outcome.
-
-
-```r
-The Mileage Per Gallon outcome (MPG) and transmission type variable (am) are of interest to answer the project questions:
-```
-- Is an automatic or manual transmission better for MPG?
-- How much is the MPG difference between automatic and manual transmissions?
-
-## Detailed analysis
 ```{r plot1} 
   library(ggplot2)
   mtcars$am <- factor(mtcars$am,levels=c(0,1),labels=c("Automatic","Manual")) 
   fit <- lm(mpg~wt*am,data=mtcars)
   g <- ggplot(mtcars,aes(y=mpg,x=wt,colour=am))+geom_point(size=5)
   g <- g+labs(x="Car's Weight[lb/1000]", y="Miles Per Gallon")
-  g1 <- g+geom_abline(intercept=coef(fit)[1],slope=coef(fit)[2],size=2)
-  g1+geom_abline(intercept=coef(fit)[1]+coef(fit)[3],slope=coef(fit)[2]+coef(fit)[4],size=1)
 ```
+
+The assumption that smaller cars (lower weight) give a better MPG outcome than larger cars (higher weight) can be observed in the dataset for both automatic and  manual transmission cars (see figure 1). 
+
+Looking at the small subset of automatic and  manual in the mid-size range (weight close to  3), there is a trend that automatic cars have better MPG outcome.
+
+
+
+## Detailed analysis
+```{r plot2} 
+ g1 <- g+geom_abline(intercept=coef(fit)[1],slope=coef(fit)[2],size=2)
+ g1+geom_abline(intercept=coef(fit)[1]+coef(fit)[3],slope=coef(fit)[2]+coef(fit)[4],size=1)
+```
+
+
+```{r  results='asis'}
+  library(xtable)
+  xt <- xtable(summary(fit))
+  print(xt)
+  xCross <- (-coef(fit)[3]/coef(fit)[4])*1000
+```
+
+As shown on the fit coefficients table above, there is a positive effect ```r format(coef(fit)[3], digits=3)``` on the intercept for the manual cars compared to automatic (reference) but but a negative effect  ```r format(coef(fit)[4], digits=3)``` on the slope. 
+The fit model shows a better MPG for manual cars for smallsize cars group before the lines crossing wt=```r format(xCross, digits=4)```lb and the opposite midsize and larger cars with weight higher than ```r format(xCross, digits=4)```lb. However, the number of manual cars with higher weight and significant leverage is only 2.
+
+Looking at the residual plots in the appendix, the model looks OK because there is no visible pattern in the Residual-vs-Fitted and no high amplitude residual with high leverage on the Residual-vs-Leverage plot. The cars with high Residuals are 2 higher efficient small cars (Fiat128, Toyota Corolla) and Merc240D which has a Diesel engine.
 
 \newpage
 
-## Appendix plots
-```{r plot2} 
+## Appendix: residual plots
+```{r plot3} 
   par(mfrow=c(2,2))
   plot(lm(mpg~wt*am,data=mtcars))
 ```
